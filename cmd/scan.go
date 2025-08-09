@@ -17,5 +17,6 @@ var scanCmd = &cobra.Command{
 		target := args[0]
 		fmt.Println("🧿 Scanning:", target)
 		core.RunRecon(target)
+		fmt.Println("Reconnaissance complete!")
 	},
 }

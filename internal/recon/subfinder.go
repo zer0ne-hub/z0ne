@@ -9,11 +9,11 @@ import (
 	"github.com/projectdiscovery/subfinder/v2/pkg/runner"
 )
 
-func subfinder() {
+func RunSubfinder(target string) {
 	subfinderOpts := &runner.Options{
-		Threads:            10, // Thread controls the number of threads to use for active enumerations
-		Timeout:            30, // Timeout is the seconds to wait for sources to respond
-		MaxEnumerationTime: 10, // MaxEnumerationTime is the maximum amount of time in mins to wait for enumeration
+		Threads:            10,
+		Timeout:            30,
+		MaxEnumerationTime: 10,
 		// ResultCallback: func(s *resolve.HostEntry) {
 		// callback function executed after each unique subdomain is found
 		// },
@@ -28,11 +28,11 @@ func subfinder() {
 	if err != nil {
 		log.Fatalf("failed to create subfinder runner: %v", err)
 	}
-
 	output := &bytes.Buffer{}
 	var sourceMap map[string]map[string]struct{}
+
 	// To run subdomain enumeration on a single domain
-	if sourceMap, err = subfinder.EnumerateSingleDomainWithCtx(context.Background(), "hackerone.com", []io.Writer{output}); err != nil {
+	if sourceMap, err = subfinder.EnumerateSingleDomainWithCtx(context.Background(), target, []io.Writer{output}); err != nil {
 		log.Fatalf("failed to enumerate single domain: %v", err)
 	}
 

@@ -11,10 +11,20 @@ func RunRecon(target string) {
 	switch TargetType {
 	case IP:
 		fmt.Println("IP address detected:", target)
-		recon.RunNaabu(target, "80", "")
+		recon.RunNaabu(target, "", "")
+		recon.RunSubfinder(target)
+		recon.RunDnsX(target)
+		recon.RunHttpX(target)
+		recon.RunKatana(target)
+		recon.RunNuclei(target)
 	case DOMAIN:
 		fmt.Println("Domain detected:", target)
-		recon.RunNaabu(target, "80", "")
+		recon.RunNaabu(target, "", "")
+		recon.RunSubfinder(target)
+		recon.RunDnsX(target)
+		recon.RunHttpX(target)
+		recon.RunKatana(target)
+		recon.RunNuclei(target)
 	case URL:
 		fmt.Println("URL detected:", target)
 	case FILE:

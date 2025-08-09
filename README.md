@@ -8,5 +8,5 @@ Attack Surface Mapper and Reconnaissance Framework
 
 - [Go](https://go.dev/)
 - [Cobra](https://cobra.dev/)
-- [project discovery](https://projectdiscovery.io/)(naabu, subfinder)
+- [project discovery](https://projectdiscovery.io/)(naabu, subfinder, dnsx, httpx, katana, nuclei)
 
