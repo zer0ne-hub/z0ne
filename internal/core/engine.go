@@ -1,8 +1,9 @@
 package core
 
 import (
-	"fmt"
 	"z0ne/internal/recon"
+
+	"github.com/fatih/color"
 )
 
 func RunRecon(target string) {
@@ -10,7 +11,7 @@ func RunRecon(target string) {
 
 	switch TargetType {
 	case IP:
-		fmt.Println("IP address detected:", target)
+		color.Green("IP address detected: %s", target)
 		recon.RunNaabu(target, "", "")
 		recon.RunSubfinder(target)
 		recon.RunDnsX(target)
@@ -18,7 +19,7 @@ func RunRecon(target string) {
 		recon.RunKatana(target)
 		recon.RunNuclei(target)
 	case DOMAIN:
-		fmt.Println("Domain detected:", target)
+		color.Green("Domain detected: %s", target)
 		recon.RunNaabu(target, "", "")
 		recon.RunSubfinder(target)
 		recon.RunDnsX(target)
@@ -26,11 +27,12 @@ func RunRecon(target string) {
 		recon.RunKatana(target)
 		recon.RunNuclei(target)
 	case URL:
-		fmt.Println("URL detected:", target)
+		color.Green("URL detected: %s", target)
 	case FILE:
-		fmt.Println("FilePath detected:", target)
+		color.Green("FilePath detected: %s", target)
+		color.Red("File path is not supported yet")
 	default:
-		fmt.Println("Unknown target type:", target)
-		fmt.Println("Please specify a valid target. Supported types are: IP, Domain, URL, FilePath")
+		color.Red("Unknown target type: %s", target)
+		color.Red("Please specify a valid target. Supported types are: IP, Domain, URL, FilePath")
 	}
 }

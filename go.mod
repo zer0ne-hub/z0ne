@@ -11,6 +11,7 @@ require (
 	github.com/projectdiscovery/naabu/v2 v2.3.5
 	github.com/projectdiscovery/nuclei/v3 v3.4.7
 	github.com/projectdiscovery/subfinder/v2 v2.8.0
+	github.com/projectdiscovery/uncover v1.1.0
 	github.com/spf13/cobra v1.9.1
 )
 
@@ -110,7 +111,7 @@ require (
 	github.com/dop251/goja_nodejs v0.0.0-20250409162600-f7acab6894b0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/fatih/color v1.16.0 // indirect
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/felixge/fgprof v0.9.5 // indirect
 	github.com/free5gc/util v1.0.5-0.20230511064842-2e120956883b // indirect
@@ -245,7 +246,7 @@ require (
 	github.com/praetorian-inc/fingerprintx v1.1.15 // indirect
 	github.com/projectdiscovery/asnmap v1.1.1 // indirect
 	github.com/projectdiscovery/blackrock v0.0.1 // indirect
-	github.com/projectdiscovery/cdncheck v1.1.27 // indirect
+	github.com/projectdiscovery/cdncheck v1.1.30 // indirect
 	github.com/projectdiscovery/chaos-client v0.5.2 // indirect
 	github.com/projectdiscovery/clistats v0.1.1 // indirect
 	github.com/projectdiscovery/dsl v0.5.0 // indirect
@@ -273,7 +274,6 @@ require (
 	github.com/projectdiscovery/retryablehttp-go v1.0.118 // indirect
 	github.com/projectdiscovery/sarif v0.0.1 // indirect
 	github.com/projectdiscovery/tlsx v1.1.9 // indirect
-	github.com/projectdiscovery/uncover v1.1.0 // indirect
 	github.com/projectdiscovery/useragent v0.0.101 // indirect
 	github.com/projectdiscovery/utils v0.4.21 // indirect
 	github.com/projectdiscovery/wappalyzergo v0.2.38 // indirect

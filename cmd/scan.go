@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"z0ne/internal/core"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -15,8 +15,8 @@ var scanCmd = &cobra.Command{
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		target := args[0]
-		fmt.Println("🧿 Scanning:", target)
+		color.Cyan("🧿 Scanning: %s", target)
 		core.RunRecon(target)
-		fmt.Println("Reconnaissance complete!")
+		color.Green("Scan complete!")
 	},
 }
