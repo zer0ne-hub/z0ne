@@ -9,7 +9,7 @@ import (
 	"github.com/projectdiscovery/katana/pkg/types"
 )
 
-func RunKatana(target string) {
+func RunKatana(target string) error {
 	options := &types.Options{
 		MaxDepth:     3,             // Maximum depth to crawl
 		FieldScope:   "rdn",         // Crawling Scope Field
@@ -40,4 +40,7 @@ func RunKatana(target string) {
 
 		gologger.Warning().Msgf("Could not crawl %s: %s", input, err.Error())
 	}
+
+	return nil
+
 }

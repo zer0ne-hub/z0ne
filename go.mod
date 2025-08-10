@@ -1,4 +1,4 @@
-module z0ne
+module github.com/zer0ne-hub/z0ne
 
 go 1.24.5
 

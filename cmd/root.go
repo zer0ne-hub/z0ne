@@ -30,7 +30,9 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.Flags().Bool("version", false, "Show version info")
+	rootCmd.AddCommand(aimAtCmd)
 	rootCmd.AddCommand(scanCmd)
+	rootCmd.AddCommand(probeCmd)
 	rootCmd.AddCommand(reportCmd)
 }
 

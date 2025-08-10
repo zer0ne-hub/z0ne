@@ -9,7 +9,7 @@ import (
 	"github.com/projectdiscovery/subfinder/v2/pkg/runner"
 )
 
-func RunSubfinder(target string) {
+func RunSubfinder(target string) error {
 	subfinderOpts := &runner.Options{
 		Threads:            10,
 		Timeout:            30,
@@ -57,4 +57,6 @@ func RunSubfinder(target string) {
 		}
 		log.Printf("%s %s (%d)\n", subdomain, sourcesList, len(sources))
 	}
+
+	return nil
 }

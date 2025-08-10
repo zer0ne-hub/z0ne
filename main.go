@@ -3,18 +3,22 @@ package main
 import (
 	"embed"
 	"fmt"
-	"os"
-	"z0ne/cmd"
+	"time"
+
+	"github.com/zer0ne-hub/z0ne/cmd"
 )
 
 //go:embed all:assets
-var assets embed.FS
+var Assets embed.FS
 
 func main() {
-	var banner, err = os.ReadFile("assets/banners/z0ne.txt")
+	//profiler
+	start := time.Now()
+	var banner, err = Assets.ReadFile("assets/banners/z0ne.txt")
 	if err != nil {
 		fmt.Println("Error reading banner:", err)
 	}
 	fmt.Println(string(banner))
 	cmd.Execute()
+	fmt.Println("Executed in:", time.Since(start))
 }

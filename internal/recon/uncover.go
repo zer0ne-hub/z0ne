@@ -9,7 +9,7 @@ import (
 	"github.com/projectdiscovery/uncover/sources"
 )
 
-func RunUncover(target string) {
+func RunUncover(target string) error {
 	opts := uncover.Options{
 		Agents:   []string{"shodan"},
 		Queries:  []string{"ssl:" + target},
@@ -41,4 +41,6 @@ func RunUncover(target string) {
 	if err := u.ExecuteWithCallback(context.TODO(), result); err != nil {
 		panic(err)
 	}
+
+	return nil
 }

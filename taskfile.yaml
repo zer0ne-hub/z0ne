@@ -1,0 +1,58 @@
+version: '3'
+
+vars:
+  BINARY_NAME: z0ne
+  BINARY_PATH: bin/{{.BINARY_NAME}}{{if eq OS "windows"}}.exe{{end}}
+  REMOTE_PATH: github.com/zer0ne-hub/z0ne
+
+tasks:
+  dev-run:
+    desc: "Run z0ne in dev mode"
+    cmds:
+      - go run main.go
+
+  build:
+    desc: "Build the z0ne binary"
+    cmds:
+      - go build -o {{.BINARY_PATH}} .
+      - chmod +x {{.BINARY_PATH}}
+
+  run:
+    deps:
+      - build
+    desc: "Run the z0ne binary"
+    cmds:
+      - ./{{.BINARY_PATH}}
+
+  test:
+    desc: "Run tests"
+    cmds:
+      - go test ./...
+
+  clean:
+    desc: "Remove build artifacts"
+    cmds:
+      - rm -rf bin
+
+  fmt:
+    desc: "Run gofmt"
+    cmds:
+      - go fmt ./...
+
+  lint:
+    desc: "Run golangci-lint"
+    cmds:
+      - golangci-lint run
+
+
+  install:
+    desc: "Install z0ne"
+    cmds:
+      - go install -v {{.REMOTE_PATH}}@latest
+      - chmod +x $(go env GOPATH)/bin/{{.BINARY_NAME}}
+      - echo "Installed z0ne to $(go env GOPATH)/bin/{{.BINARY_NAME}}"
+
+  uninstall:
+    desc: "Uninstall z0ne"
+    cmds:
+      - rm -rf $(go env GOPATH)/bin/{{.BINARY_NAME}}

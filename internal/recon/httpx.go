@@ -10,7 +10,7 @@ import (
 	"github.com/projectdiscovery/httpx/runner"
 )
 
-func RunHttpX(target string) {
+func RunHttpX(target string) error {
 	gologger.DefaultLogger.SetMaxLevel(levels.LevelVerbose) // increase the verbosity (optional)
 
 	options := runner.Options{
@@ -37,4 +37,6 @@ func RunHttpX(target string) {
 	defer httpxRunner.Close()
 
 	httpxRunner.RunEnumeration()
+
+	return nil
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/projectdiscovery/naabu/v2/pkg/runner"
 )
 
-func RunNaabu(target string, ports string, scanType string) {
+func RunNaabu(target string, ports string, scanType string) error {
 	options := runner.Options{
 		Host:     goflags.StringSlice{target},
 		ScanType: scanType,
@@ -27,4 +27,5 @@ func RunNaabu(target string, ports string, scanType string) {
 	}
 	defer naabuRunner.Close()
 	naabuRunner.RunEnumeration(context.Background())
+	return nil
 }

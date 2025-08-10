@@ -7,7 +7,7 @@ import (
 	nuclei "github.com/projectdiscovery/nuclei/v3/lib"
 )
 
-func RunNuclei(target string) {
+func RunNuclei(target string) error {
 	ne, err := nuclei.NewNucleiEngineCtx(context.Background(),
 		nuclei.WithTemplateFilters(nuclei.TemplateFilters{Tags: []string{"oast"}}),
 		nuclei.EnableStatsWithOpts(nuclei.StatsOptions{MetricServerPort: 6064}), // optionally enable metrics server for better observability
@@ -22,4 +22,6 @@ func RunNuclei(target string) {
 		fmt.Println(err)
 	}
 	defer ne.Close()
+
+	return nil
 }
