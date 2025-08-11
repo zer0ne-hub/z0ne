@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/fatih/color"
@@ -109,7 +110,6 @@ func buildTasks(mode string, target string) []Task {
 				}
 				return SaveResultToJSON("subfinder", out)
 			}},
-
 			{Name: "dnsx", Dependencies: []string{"subfinder"}, Execute: func(r map[string]interface{}) error {
 				out, err := recon.RunDnsX(target)
 				if err != nil {
@@ -117,7 +117,6 @@ func buildTasks(mode string, target string) []Task {
 				}
 				return SaveResultToJSON("dnsx", out)
 			}},
-
 			{Name: "httpx", Dependencies: []string{"dnsx", "naabu"}, Execute: func(r map[string]interface{}) error {
 				out, err := recon.RunHttpX(target)
 				if err != nil {
@@ -125,7 +124,6 @@ func buildTasks(mode string, target string) []Task {
 				}
 				return SaveResultToJSON("httpx", out)
 			}},
-
 			{Name: "katana", Dependencies: []string{"httpx"}, Execute: func(r map[string]interface{}) error {
 				out, err := recon.RunKatana(target)
 				if err != nil {
@@ -158,7 +156,6 @@ func buildTasks(mode string, target string) []Task {
 				}
 				return SaveResultToJSON("dnsx", out)
 			}},
-
 			{Name: "httpx", Dependencies: []string{"dnsx", "naabu"}, Execute: func(r map[string]interface{}) error {
 				out, err := recon.RunHttpX(target)
 				if err != nil {
@@ -172,14 +169,6 @@ func buildTasks(mode string, target string) []Task {
 					return err
 				}
 				return SaveResultToJSON("nuclei", out)
-			}},
-
-			{Name: "uncover", Dependencies: []string{"httpx"}, Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunUncover(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("uncover", out)
 			}},
 		}
 	}
@@ -197,10 +186,28 @@ func RunRecon(target string) {
 }
 
 // RunProbe executes a precise probing sequence
-func RunProbe(target string) {
+func RunProbe(target string, keys ProbeKeys) {
+
 	if targetType := detectTargetType(target); targetType == IP || targetType == DOMAIN {
 		color.Cyan("🎯 Target: %s", target)
-		RunPipeline(buildTasks("probe", target), 3)
+
+		tasks := buildTasks("probe", target)
+		if keys.ShodanKey != "" {
+			fmt.Println("Shodan API key found, Running Uncover...")
+			tasks = append(tasks, Task{
+				Name:         "uncover",
+				Dependencies: []string{"httpx"},
+				Execute: func(r map[string]interface{}) error {
+					out, err := recon.RunUncover(target, keys.ShodanKey)
+					if err != nil {
+						return err
+					}
+					return SaveResultToJSON("uncover", out)
+				},
+			})
+		}
+
+		RunPipeline(tasks, 3)
 	} else {
 		color.Red("Unknown target type: %s", target)
 	}

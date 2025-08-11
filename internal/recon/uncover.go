@@ -3,13 +3,17 @@ package recon
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/uncover"
 	"github.com/projectdiscovery/uncover/sources"
 )
 
-func RunUncover(target string) (interface{}, error) {
+func RunUncover(target string, shodanKey string) (interface{}, error) {
+	if shodanKey != "" {
+		os.Setenv("SHODAN_API_KEY", shodanKey)
+	}
 
 	var results []map[string]interface{}
 

@@ -86,3 +86,8 @@ func SaveResultToJSON(toolName string, resultData interface{}) error {
 
 	return nil
 }
+
+type ProbeKeys struct {
+	ShodanKey string
+	// Add more flags API keys as needed
+}
