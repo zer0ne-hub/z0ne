@@ -1,2 +1,7 @@
 /out/**
 /bin/**
+/z0ne-out/**
+*.json
+*.pdf
+*.markdown
+*.md
