@@ -12,11 +12,9 @@ import (
 
 type ReconReport struct {
 	Target     string
-	Type       string
 	ModulesRun []string
 	Results    map[string]interface{}
-	StartedAt  time.Time
-	FinishedAt time.Time
+	RedactedAt time.Time
 }
 
 // GenerateReport generates a report for a given target
@@ -45,18 +43,14 @@ func GenerateReport(targetName string) error {
 	// build the report
 	report := ReconReport{
 		Target:     targetName,
-		Type:       "Probe",
 		ModulesRun: []string{},
 		Results:    results,
-		StartedAt:  time.Now().Add(-time.Hour),
-		FinishedAt: time.Now(),
+		RedactedAt: time.Now(),
 	}
 
 	// make markdown content
 	md := fmt.Sprintf("# Reconnaissance Report for %s\n\n", report.Target)
-	md += fmt.Sprintf("**Type:** %s\n\n", report.Type)
-	md += fmt.Sprintf("**Started:** %s\n\n", report.StartedAt.Format(time.RFC1123))
-	md += fmt.Sprintf("**Finished:** %s\n\n", report.FinishedAt.Format(time.RFC1123))
+	md += fmt.Sprintf("**Redacted at:** %s\n\n", report.RedactedAt.Format(time.RFC1123))
 
 	md += "## Modules Run\n"
 	if len(report.ModulesRun) == 0 {
