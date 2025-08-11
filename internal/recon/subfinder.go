@@ -3,60 +3,51 @@ package recon
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"log"
 
 	"github.com/projectdiscovery/subfinder/v2/pkg/runner"
 )
 
-func RunSubfinder(target string) error {
+// RunSubfinder enumerates subdomains for a target and returns them in a JSON-friendly format
+func RunSubfinder(target string) (interface{}, error) {
 	subfinderOpts := &runner.Options{
 		Threads:            10,
 		Timeout:            30,
 		MaxEnumerationTime: 10,
-		// ResultCallback: func(s *resolve.HostEntry) {
-		// callback function executed after each unique subdomain is found
-		// },
-		// ProviderConfig: "your_provider_config.yaml",
-		// and other config related options
 	}
 
-	// disable timestamps in logs / configure logger
 	log.SetFlags(0)
 
-	subfinder, err := runner.NewRunner(subfinderOpts)
+	subfinderRunner, err := runner.NewRunner(subfinderOpts)
 	if err != nil {
-		log.Fatalf("failed to create subfinder runner: %v", err)
+		return nil, fmt.Errorf("failed to create subfinder runner: %w", err)
 	}
+
 	output := &bytes.Buffer{}
-	var sourceMap map[string]map[string]struct{}
-
-	// To run subdomain enumeration on a single domain
-	if sourceMap, err = subfinder.EnumerateSingleDomainWithCtx(context.Background(), target, []io.Writer{output}); err != nil {
-		log.Fatalf("failed to enumerate single domain: %v", err)
+	sourceMap, err := subfinderRunner.EnumerateSingleDomainWithCtx(
+		context.Background(),
+		target,
+		[]io.Writer{output},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to enumerate single domain: %w", err)
 	}
 
-	// To run subdomain enumeration on a list of domains from file/reader
-	// file, err := os.Open("domains.txt")
-	// if err != nil {
-	// 	log.Fatalf("failed to open domains file: %v", err)
-	// }
-	// defer file.Close()
-	// if err = subfinder.EnumerateMultipleDomainsWithCtx(context.Background(), file, []io.Writer{output}); err != nil {
-	// 	log.Fatalf("failed to enumerate subdomains from file: %v", err)
-	// }
-
-	// print the output
-	log.Println(output.String())
-
-	// Or use sourceMap to access the results in your application
+	// Build results slice
+	var results []map[string]interface{}
 	for subdomain, sources := range sourceMap {
-		sourcesList := make([]string, 0, len(sources))
-		for source := range sources {
-			sourcesList = append(sourcesList, source)
+		srcList := make([]string, 0, len(sources))
+		for s := range sources {
+			srcList = append(srcList, s)
 		}
-		log.Printf("%s %s (%d)\n", subdomain, sourcesList, len(sources))
+		results = append(results, map[string]interface{}{
+			"subdomain": subdomain,
+			"sources":   srcList,
+			"count":     len(srcList),
+		})
 	}
 
-	return nil
+	return results, nil
 }

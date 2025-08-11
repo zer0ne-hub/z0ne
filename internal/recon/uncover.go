@@ -9,7 +9,10 @@ import (
 	"github.com/projectdiscovery/uncover/sources"
 )
 
-func RunUncover(target string) error {
+func RunUncover(target string) (interface{}, error) {
+
+	var results []map[string]interface{}
+
 	opts := uncover.Options{
 		Agents:   []string{"shodan"},
 		Queries:  []string{"ssl:" + target},
@@ -31,16 +34,20 @@ func RunUncover(target string) error {
 
 	fmt.Println("\n\n- Uncover Results:")
 	result := func(result sources.Result) {
+		results = append(results, map[string]interface{}{
+			"ipPort": result.IpPort(),
+			"host":   result.Host,
+		})
 		fmt.Println(result.IpPort())
 	}
 
 	// Execute executes and returns a channel with all results
-	// ch , err := u.Execute(context.Background())
+	//ch, err := u.Execute(context.Background())
 
 	// Execute with Callback calls u.Execute() internally and abstracts channel handling logic
 	if err := u.ExecuteWithCallback(context.TODO(), result); err != nil {
 		panic(err)
 	}
 
-	return nil
+	return results, nil
 }

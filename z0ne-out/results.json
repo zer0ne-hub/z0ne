@@ -1,0 +1,331 @@
+{
+  "dnsx": {
+    "ips": [
+      "188.114.96.2",
+      "188.114.97.2"
+    ],
+    "rawResponse": "{\"host\":\"nairolf32.com\",\"ttl\":300,\"resolver\":[\"8.8.4.4:53\"],\"a\":[\"172.67.128.48\",\"104.21.0.184\"],\"all\":[\"nairolf32.com.\\t300\\tIN\\tA\\t172.67.128.48\",\"nairolf32.com.\\t300\\tIN\\tA\\t104.21.0.184\",\"\\n;; OPT PSEUDOSECTION:\\n; EDNS: version 0; flags:; udp: 512\"],\"raw\":\";; opcode: QUERY, status: NOERROR, id: 16710\\n;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1\\n\\n;; OPT PSEUDOSECTION:\\n; EDNS: version 0; flags:; udp: 512\\n\\n;; QUESTION SECTION:\\n;nairolf32.com.\\tIN\\t A\\n\\n;; ANSWER SECTION:\\nnairolf32.com.\\t300\\tIN\\tA\\t172.67.128.48\\nnairolf32.com.\\t300\\tIN\\tA\\t104.21.0.184\\n\",\"status_code\":\"NOERROR\",\"raw_resp\":{\"Id\":16710,\"Response\":true,\"Opcode\":0,\"Authoritative\":false,\"Truncated\":false,\"RecursionDesired\":true,\"RecursionAvailable\":true,\"Zero\":false,\"AuthenticatedData\":false,\"CheckingDisabled\":false,\"Rcode\":0,\"Question\":[{\"Name\":\"nairolf32.com.\",\"Qtype\":1,\"Qclass\":1}],\"Answer\":[{\"Hdr\":{\"Name\":\"nairolf32.com.\",\"Rrtype\":1,\"Class\":1,\"Ttl\":300,\"Rdlength\":4},\"A\":\"172.67.128.48\"},{\"Hdr\":{\"Name\":\"nairolf32.com.\",\"Rrtype\":1,\"Class\":1,\"Ttl\":300,\"Rdlength\":4},\"A\":\"104.21.0.184\"}],\"Ns\":null,\"Extra\":[{\"Hdr\":{\"Name\":\".\",\"Rrtype\":41,\"Class\":512,\"Ttl\":0,\"Rdlength\":0},\"Option\":null}]},\"timestamp\":\"2025-08-11T10:30:50.3348359+01:00\"}"
+  },
+  "httpx": [
+    {
+      "host": "188.114.96.2",
+      "input": "nairolf32.com",
+      "status_code": 200,
+      "title": "EDEMESSI Florian (nair0lf32)",
+      "url": "https://nairolf32.com"
+    }
+  ],
+  "katana": [
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/js/script.js"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/cdn-cgi/l/email-protection"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/css/style.css"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/projects.html"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/site.webmanifest"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/support-me/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/portfolio"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/portfolio/manifest.json"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/js/script.js"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/portfolio/static/css/main.a236ce32.css"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/sitemap-index.xml"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/rss.xml"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/mcs"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/css/style.css"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/zer0ne-blog"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/portfolio/static/js/main.4dd8d8b8.js"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/portfolio/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/blog"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/'+e.replace(/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://nairolf32.com/cdn-cgi/styles/cf.errors.css"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/about"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/blog"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/about/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/portfolio/static/js/main.4dd8d8b8.js"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/blog/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/blog/first-post/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/blog/piracy/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://blog.nairolf32.com/blog/229-utilities/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/blog/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://dev.nairolf32.com/about/"
+    },
+    {
+      "body": "",
+      "method": "GET",
+      "url": "https://vps.nairolf32.com"
+    }
+  ],
+  "naabu": [
+    {
+      "host": "nairolf32.com",
+      "ip": "188.114.96.2",
+      "ports": [
+        {
+          "port": 8080,
+          "protocol": "tcp",
+          "tls": false
+        },
+        {
+          "port": 8443,
+          "protocol": "tcp",
+          "tls": false
+        },
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "tls": false
+        },
+        {
+          "port": 443,
+          "protocol": "tcp",
+          "tls": false
+        }
+      ]
+    }
+  ],
+  "subfinder": [
+    {
+      "count": 1,
+      "sources": [
+        "crtsh"
+      ],
+      "subdomain": "dev-blog.nairolf32.com"
+    },
+    {
+      "count": 2,
+      "sources": [
+        "hackertarget",
+        "crtsh"
+      ],
+      "subdomain": "map.nairolf32.com"
+    },
+    {
+      "count": 2,
+      "sources": [
+        "crtsh",
+        "hackertarget"
+      ],
+      "subdomain": "project-academy.nairolf32.com"
+    },
+    {
+      "count": 3,
+      "sources": [
+        "alienvault",
+        "crtsh",
+        "hackertarget"
+      ],
+      "subdomain": "zerone.nairolf32.com"
+    },
+    {
+      "count": 3,
+      "sources": [
+        "alienvault",
+        "crtsh",
+        "hackertarget"
+      ],
+      "subdomain": "haxxor.nairolf32.com"
+    },
+    {
+      "count": 2,
+      "sources": [
+        "crtsh",
+        "hackertarget"
+      ],
+      "subdomain": "portfolio.nairolf32.com"
+    },
+    {
+      "count": 2,
+      "sources": [
+        "crtsh",
+        "hackertarget"
+      ],
+      "subdomain": "forum.nairolf32.com"
+    },
+    {
+      "count": 2,
+      "sources": [
+        "crtsh",
+        "hackertarget"
+      ],
+      "subdomain": "website32.nairolf32.com"
+    },
+    {
+      "count": 1,
+      "sources": [
+        "crtsh"
+      ],
+      "subdomain": "projects.nairolf32.com"
+    },
+    {
+      "count": 3,
+      "sources": [
+        "alienvault",
+        "crtsh",
+        "hackertarget"
+      ],
+      "subdomain": "blog.nairolf32.com"
+    }
+  ]
+}

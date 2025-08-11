@@ -1,7 +1,6 @@
 package recon
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/projectdiscovery/goflags"
@@ -10,19 +9,29 @@ import (
 	"github.com/projectdiscovery/httpx/runner"
 )
 
-func RunHttpX(target string) error {
+func RunHttpX(target string) (interface{}, error) {
 	gologger.DefaultLogger.SetMaxLevel(levels.LevelVerbose) // increase the verbosity (optional)
+
+	var results []map[string]interface{}
 
 	options := runner.Options{
 		Methods:         "GET",
 		InputTargetHost: goflags.StringSlice{target},
 		OnResult: func(r runner.Result) {
-			// handle error
 			if r.Err != nil {
-				fmt.Printf("[Err] %s: %s\n", r.Input, r.Err)
+				results = append(results, map[string]interface{}{
+					"input": target,
+					"error": r.Err.Error(),
+				})
 				return
 			}
-			fmt.Printf("%s %s %d\n", r.Input, r.Host, r.StatusCode)
+			results = append(results, map[string]interface{}{
+				"input":       r.Input,
+				"host":        r.Host,
+				"url":         r.URL,
+				"status_code": r.StatusCode,
+				"title":       r.Title,
+			})
 		},
 	}
 
@@ -38,5 +47,5 @@ func RunHttpX(target string) error {
 
 	httpxRunner.RunEnumeration()
 
-	return nil
+	return results, nil
 }
