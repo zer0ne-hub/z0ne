@@ -1,3 +1,4 @@
+// Package report: Handles report generation
 package report
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/zer0ne-hub/z0ne/internal/core"
 )
 
+// ReconReport: Struct to hold report data
 type ReconReport struct {
 	Target     string
 	ModulesRun []string
@@ -17,9 +19,8 @@ type ReconReport struct {
 	RedactedAt time.Time
 }
 
-// GenerateReport generates a report for a given target
+// GenerateReport: generates a markdown report for a given target from the json results
 func GenerateReport(targetName string) error {
-	//Open and read results.json
 	var outputDir = "z0ne-out"
 	var resultFile = filepath.Join(outputDir, "results.json")
 	var reportFile = filepath.Join(outputDir, "report.md")

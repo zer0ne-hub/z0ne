@@ -1,3 +1,4 @@
+// Package recon: Handles all Reconnaissance modules independently
 package recon
 
 import (
@@ -48,6 +49,8 @@ func RunSubfinder(target string) (interface{}, error) {
 			"count":     len(srcList),
 		})
 	}
+
+	fmt.Println("Subfinder found:", results[0]["subdomain"])
 
 	return results, nil
 }

@@ -1,3 +1,4 @@
+// Package recon: Handles all Reconnaissance modules independently
 package recon
 
 import (
@@ -14,19 +15,24 @@ func RunNaabu(target, ports, scanType string) (interface{}, error) {
 	var results []map[string]interface{}
 
 	options := runner.Options{
-		Host:     goflags.StringSlice{target},
-		ScanType: scanType,
-		Ports:    ports,
+		Host:             goflags.StringSlice{target},
+		ScanType:         scanType,
+		Ports:            ports,
+		Verify:           true,
+		Nmap:             true,
+		Ping:             true,
+		ServiceDiscovery: true,
+		ServiceVersion:   true,
+		OutputCDN:        true,
 		OnResult: func(hr *result.HostResult) {
-			// Collect results into a generic structure
 			entry := map[string]interface{}{
-				"host":  hr.Host,
-				"ip":    hr.IP,
-				"ports": hr.Ports,
+				"host":            hr.Host,
+				"ip":              hr.IP,
+				"ports":           hr.Ports,
+				"confidenceLevel": hr.Confidence,
 			}
 			results = append(results, entry)
-
-			// Still print for live feedback
+			fmt.Println("Naabu found:")
 			fmt.Println(hr.Host, hr.Ports)
 		},
 	}

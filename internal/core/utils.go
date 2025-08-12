@@ -1,4 +1,4 @@
-// performs utilities tasks like parsing target input
+// Package core: Handles core engine logic
 package core
 
 import (
@@ -15,6 +15,7 @@ import (
 	"sync"
 )
 
+// TargetType: Enumeration for different types of targets
 type TargetType int
 
 const (
@@ -25,6 +26,7 @@ const (
 	FILE
 )
 
+// detectTargetType: Detects the type of the target passed as an argument
 func detectTargetType(input string) TargetType {
 	input = strings.TrimSpace(input)
 	if _, err := os.Stat(input); err == nil || filepath.IsAbs(input) {
@@ -46,8 +48,9 @@ func detectTargetType(input string) TargetType {
 // Global mutex to lock file writes across goroutines
 var resultsFileLock sync.Mutex
 
-// SaveResultToJSON safely writes or updates a tool's result in /z0ne-out/results.json
-// Thread-safe: only one goroutine can modify the file at a time.
+// SaveResultToJSON: safely writes or updates a tool's result in /z0ne-out/results.json
+// Thread-safe because only one goroutine can modify the file at a time.
+// Update existing results if file exists or create a new file
 func SaveResultToJSON(toolName string, resultData interface{}) error {
 	resultsFileLock.Lock()
 	defer resultsFileLock.Unlock()
@@ -55,12 +58,9 @@ func SaveResultToJSON(toolName string, resultData interface{}) error {
 	outputDir := "z0ne-out"
 	outputFile := filepath.Join(outputDir, "results.json")
 
-	// Ensure output directory exists
 	if err := os.MkdirAll(outputDir, fs.ModePerm); err != nil {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
-
-	// Load existing results if file exists
 	results := make(map[string]interface{})
 	if fileData, err := os.ReadFile(outputFile); err == nil {
 		if len(fileData) > 0 {
@@ -71,11 +71,7 @@ func SaveResultToJSON(toolName string, resultData interface{}) error {
 	} else if !os.IsNotExist(err) {
 		return fmt.Errorf("failed to read existing results file: %w", err)
 	}
-
-	// Update or add the tool's result
 	results[toolName] = resultData
-
-	// Encode and write updated results
 	fileData, err := json.MarshalIndent(results, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to encode results to JSON: %w", err)
@@ -91,11 +87,10 @@ func SaveResultToJSON(toolName string, resultData interface{}) error {
 // ProbeKeys struct to hold API keys
 type ProbeKeys struct {
 	ShodanKey string
-	// Add more flags API keys as needed
 }
 
-// formatMap formats a map[string]interface{} recursively into a Markdown string
-// used in the report generation
+// FormatMap: formats a map[string]interface{} recursively into a Markdown string
+// used in the report generation process
 func FormatMap(data interface{}, indent int) string {
 	prefix := strings.Repeat("  ", indent)
 	switch v := data.(type) {
@@ -131,14 +126,17 @@ func FormatMap(data interface{}, indent int) string {
 	}
 }
 
+// containsNewline: checks if a string contains a newline
 func containsNewline(s string) bool {
 	return strings.Contains(s, "\n")
 }
 
+// looksLikeJSON: checks if a string looks like JSON
 func looksLikeJSON(s string) bool {
 	return strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}")
 }
 
+// formatTable: formats a slice of maps into a Markdown table
 func formatTable(items []interface{}) string {
 	colSet := make(map[string]struct{})
 	for _, item := range items {

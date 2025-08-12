@@ -1,3 +1,4 @@
+// Package main is the main package for z0ne
 package main
 
 import (
@@ -11,6 +12,7 @@ import (
 //go:embed all:assets
 var Assets embed.FS
 
+// main: Entry point for z0ne
 func main() {
 	//profiler
 	start := time.Now()

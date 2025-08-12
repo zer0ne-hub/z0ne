@@ -1,3 +1,4 @@
+// Package cmd: Handles command line interface using cobra
 package cmd
 
 import (
@@ -6,8 +7,9 @@ import (
 	"github.com/zer0ne-hub/z0ne/internal/core"
 )
 
+// scanCmd: represents the scan command
 var scanCmd = &cobra.Command{
-	Use:   "recon [target]",
+	Use:   "scan [target]",
 	Short: "Basic web reconnaissance",
 	Long: `This mode will enumerate subdomains, resolve IP addresses, and scan ports... on a given target.
 	fast, minimal but large scale web reconnaissance.`,
@@ -15,7 +17,11 @@ var scanCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		target := args[0]
 		color.Cyan("👀 Scanning: %s", target)
-		core.RunRecon(target)
-		color.Green("Scan complete!")
+		err := core.RunRecon(target)
+		if err != nil {
+			color.Red("Scan Error: %v", err)
+		}
+		color.Green("\n\nScan complete! Results saved to /z0ne-out/results.json")
+		color.Green("You can now run 'z0ne report [targetName]' to generate a MD report.")
 	},
 }

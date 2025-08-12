@@ -1,7 +1,9 @@
+// Package recon: Handles all Reconnaissance modules independently
 package recon
 
 import (
 	"context"
+	"fmt"
 
 	nuclei "github.com/projectdiscovery/nuclei/v3/lib"
 	"github.com/projectdiscovery/nuclei/v3/pkg/installer"
@@ -9,6 +11,7 @@ import (
 	syncutil "github.com/projectdiscovery/utils/sync"
 )
 
+// RunNuclei: Runs nuclei on a given target
 func RunNuclei(target string) (interface{}, error) {
 
 	var results []map[string]interface{}
@@ -19,24 +22,25 @@ func RunNuclei(target string) (interface{}, error) {
 		panic(err)
 	}
 
-	// create nuclei engine with options
 	ne, err := nuclei.NewThreadSafeNucleiEngineCtx(ctx)
 	if err != nil {
 		panic(err)
 	}
-	// setup sizedWaitgroup to handle concurrency
+
 	sg, err := syncutil.New(syncutil.WithSize(10))
 	if err != nil {
 		panic(err)
 	}
 
-	//callback function to save results
 	onResult := func(result *output.ResultEvent) {
 		results = append(results, map[string]interface{}{
-			"ip":   result.IP,
-			"port": result.Port,
-			"host": result.Host,
-			"info": result.Info,
+			"ip":       result.IP,
+			"port":     result.Port,
+			"host":     result.Host,
+			"info":     result.Info,
+			"analyzer": result.AnalyzerDetails,
+			"matches":  result.Matched,
+			"matcher":  result.MatcherName,
 		})
 	}
 	ne.GlobalResultCallback(onResult)
@@ -70,6 +74,7 @@ func RunNuclei(target string) (interface{}, error) {
 	sg.Wait()
 	defer ne.Close()
 
-	// Output:
+	fmt.Println("Nuclei found:", results[0]["info"])
+
 	return results, nil
 }

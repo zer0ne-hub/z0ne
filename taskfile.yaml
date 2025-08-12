@@ -29,6 +29,11 @@ tasks:
     cmds:
       - go test ./...
 
+  doc:
+    desc: "Generate documentation"
+    cmds:
+      - go doc -all
+
   clean:
     desc: "Remove build artifacts"
     cmds:

@@ -1,6 +1,8 @@
+// Package recon: Handles all Reconnaissance modules independently
 package recon
 
 import (
+	"fmt"
 	"math"
 	"sync"
 
@@ -29,9 +31,13 @@ func RunKatana(target string) (interface{}, error) {
 		OnResult: func(result output.Result) {
 			resultsMu.Lock()
 			results = append(results, map[string]interface{}{
-				"url":    result.Request.URL,
-				"method": result.Request.Method,
-				"body":   result.Request.Body,
+				"url":          result.Request.URL,
+				"method":       result.Request.Method,
+				"body":         result.Request.Body,
+				"status":       result.Response.StatusCode,
+				"headers":      result.Response.Headers,
+				"rootHost":     result.Response.RootHostname,
+				"technologies": result.Response.Technologies,
 			})
 			resultsMu.Unlock()
 			gologger.Info().Msg(result.Request.URL)
@@ -44,6 +50,8 @@ func RunKatana(target string) (interface{}, error) {
 	}
 	defer crawlerOptions.Close()
 
+	fmt.Println("Katana started to crawl ", target)
+
 	crawler, err := standard.New(crawlerOptions)
 	if err != nil {
 		return nil, err
@@ -53,7 +61,6 @@ func RunKatana(target string) (interface{}, error) {
 	err = crawler.Crawl("https://" + target)
 	if err != nil {
 		gologger.Warning().Msgf("Could not crawl %s: %s", target, err.Error())
-		// return partial results anyway
 	}
 
 	return results, nil

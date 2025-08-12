@@ -1,3 +1,4 @@
+// Package recon: Handles all Reconnaissance modules independently
 package recon
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/projectdiscovery/uncover/sources"
 )
 
+// RunUncover: Returns results in a format ready for JSON saving
 func RunUncover(target string, shodanKey string) (interface{}, error) {
 	if shodanKey != "" {
 		os.Setenv("SHODAN_API_KEY", shodanKey)

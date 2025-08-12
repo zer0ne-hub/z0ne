@@ -1,13 +1,16 @@
-// root command: when z0ne is called without any arguments
+// Package cmd: Handles command line interface using cobra
 package cmd
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/fatih/color"
+
 	"github.com/spf13/cobra"
 )
 
+// rootCmd: represents the base command when the user runs z0ne without any arguments
 var rootCmd = &cobra.Command{
 	Use:   "z0ne",
 	Short: "💀 z0ne - Attack Surface Mapper",
@@ -16,18 +19,18 @@ var rootCmd = &cobra.Command{
 		HiddenDefaultCmd: true,
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// Print banner and quick usage
-		fmt.Println("Please specify a module command. Run 'z0ne --help' for usage.")
-
+		fmt.Println("Please specify a module command. Run 'z0ne --help' for quick usage of available modules.")
+		fmt.Println("For help with a specific module or command, Run 'z0ne <module> --help'.")
 		// Print version when the --version flag is set
 		showVersion, _ := cmd.Flags().GetBool("version")
 		if showVersion {
-			fmt.Println("Version: v0.1.0") // TODO: Get version from release source
+			color.Cyan("Version: v0.1.0") // TODO: Get version from release source
 			return
 		}
 	},
 }
 
+// init: Initialize the root command with flags and subcommands
 func init() {
 	rootCmd.Flags().Bool("version", false, "Show version info")
 	rootCmd.AddCommand(scanCmd)
@@ -35,9 +38,10 @@ func init() {
 	rootCmd.AddCommand(reportCmd)
 }
 
+// Execute: Executes the root command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println("Error executing command: ", err)
+		color.Red("Error executing command: %v", err)
 		os.Exit(1)
 	}
 }

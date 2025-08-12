@@ -1,3 +1,4 @@
+// Package core: Handles core engine logic
 package core
 
 import (
@@ -8,16 +9,16 @@ import (
 	"github.com/zer0ne-hub/z0ne/internal/recon"
 )
 
-// Task:Single pipeline step with its
-// dependencies and execution logic
+// Task:Single pipeline step with dependent tasks and execution logic
 type Task struct {
 	Name         string
 	Dependencies []string
 	Execute      func(results map[string]interface{}) error
 }
 
-// RunPipeline: Executes tasks in parallel
-// while respecting dependencies
+// RunPipeline: Executes tasks in parallel while respecting dependencies in queue order
+// Uses a goroutine pool to run tasks concurrently and a scheduler to ensure dependencies are met
+// before starting a task.
 func RunPipeline(tasks []Task, maxWorkers int) {
 	results := make(map[string]interface{})
 	var mu sync.Mutex
@@ -34,9 +35,9 @@ func RunPipeline(tasks []Task, maxWorkers int) {
 				err := task.Execute(results)
 				mu.Lock()
 				if err != nil {
-					color.Red("[!] %s failed: %v", task.Name, err)
+					color.Red("[!] %s failed: %v \n\n", task.Name, err)
 				} else {
-					color.Green("[✓] %s completed", task.Name)
+					color.Green("[✓] %s completed\n\n", task.Name)
 					taskCompleted[task.Name] = true
 				}
 				mu.Unlock()
@@ -48,15 +49,12 @@ func RunPipeline(tasks []Task, maxWorkers int) {
 	// Scheduler
 	for {
 		startedAnyTask := false
-
 		for _, t := range tasks {
 			mu.Lock()
-
 			if taskCompleted[t.Name] || taskInProgress[t.Name] {
 				mu.Unlock()
 				continue
 			}
-
 			// Check if dependencies are all completed
 			depsReady := true
 			for _, dep := range t.Dependencies {
@@ -65,14 +63,12 @@ func RunPipeline(tasks []Task, maxWorkers int) {
 					break
 				}
 			}
-
 			if depsReady {
 				taskInProgress[t.Name] = true
 				wg.Add(1)
 				taskQueue <- t
 				startedAnyTask = true
 			}
-
 			mu.Unlock()
 		}
 
@@ -85,13 +81,11 @@ func RunPipeline(tasks []Task, maxWorkers int) {
 			mu.Unlock()
 		}
 	}
-
 	wg.Wait()
 	close(taskQueue)
 }
 
-// buildTasks returns the ordered tasks
-// for the given mode
+// buildTasks: returns the ordered tasks for a given mode and target
 func buildTasks(mode string, target string) []Task {
 	switch mode {
 	case "scan":
@@ -175,22 +169,19 @@ func buildTasks(mode string, target string) []Task {
 	return nil
 }
 
-// RunRecon executes a broad scanning sequence
-func RunRecon(target string) {
+// RunRecon: Executes a broad scanning task sequence
+func RunRecon(target string) error {
 	if targetType := detectTargetType(target); targetType == IP || targetType == DOMAIN {
-		color.Cyan("🎯 Target: %s", target)
 		RunPipeline(buildTasks("scan", target), 3)
 	} else {
 		color.Red("Unknown target type: %s", target)
 	}
+	return nil
 }
 
-// RunProbe executes a precise probing sequence
-func RunProbe(target string, keys ProbeKeys) {
-
+// RunProbe: Executes a precise probing task sequence
+func RunProbe(target string, keys ProbeKeys) error {
 	if targetType := detectTargetType(target); targetType == IP || targetType == DOMAIN {
-		color.Cyan("🎯 Target: %s", target)
-
 		tasks := buildTasks("probe", target)
 		if keys.ShodanKey != "" {
 			fmt.Println("Shodan API key found, Running Uncover...")
@@ -206,9 +197,9 @@ func RunProbe(target string, keys ProbeKeys) {
 				},
 			})
 		}
-
 		RunPipeline(tasks, 3)
 	} else {
 		color.Red("Unknown target type: %s", target)
 	}
+	return nil
 }
