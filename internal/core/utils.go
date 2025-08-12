@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 	"sync"
 )
@@ -87,86 +86,4 @@ func SaveResultToJSON(toolName string, resultData interface{}) error {
 // ProbeKeys struct to hold API keys
 type ProbeKeys struct {
 	ShodanKey string
-}
-
-// FormatMap: formats a map[string]interface{} recursively into a Markdown string
-// used in the report generation process
-func FormatMap(data interface{}, indent int) string {
-	prefix := strings.Repeat("  ", indent)
-	switch v := data.(type) {
-	case map[string]interface{}:
-		md := ""
-		for key, val := range v {
-			if s, ok := val.(string); ok && len(s) > 60 && (containsNewline(s) || looksLikeJSON(s)) {
-				md += fmt.Sprintf("%s- **%s**:\n\n```\n%s\n```\n\n", prefix, key, s)
-			} else {
-				md += fmt.Sprintf("%s- **%s**: %s\n", prefix, key, FormatMap(val, indent+1))
-			}
-		}
-		return md
-	case []interface{}:
-		if len(v) > 0 {
-			if _, ok := v[0].(map[string]interface{}); ok {
-				return formatTable(v)
-			}
-		}
-		md := ""
-		for _, val := range v {
-			md += fmt.Sprintf("%s- %s\n", prefix, FormatMap(val, indent+1))
-		}
-		return md
-	case string:
-		return v
-	case float64:
-		return fmt.Sprintf("%v", v)
-	case bool:
-		return fmt.Sprintf("%v", v)
-	default:
-		return fmt.Sprintf("%v", v)
-	}
-}
-
-// containsNewline: checks if a string contains a newline
-func containsNewline(s string) bool {
-	return strings.Contains(s, "\n")
-}
-
-// looksLikeJSON: checks if a string looks like JSON
-func looksLikeJSON(s string) bool {
-	return strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}")
-}
-
-// formatTable: formats a slice of maps into a Markdown table
-func formatTable(items []interface{}) string {
-	colSet := make(map[string]struct{})
-	for _, item := range items {
-		if m, ok := item.(map[string]interface{}); ok {
-			for k := range m {
-				colSet[k] = struct{}{}
-			}
-		}
-	}
-	cols := make([]string, 0, len(colSet))
-	for k := range colSet {
-		cols = append(cols, k)
-	}
-	sort.Strings(cols)
-
-	md := "| " + strings.Join(cols, " | ") + " |\n"
-	md += "| " + strings.Repeat("--- | ", len(cols)) + "\n"
-
-	for _, item := range items {
-		if m, ok := item.(map[string]interface{}); ok {
-			row := make([]string, len(cols))
-			for i, col := range cols {
-				if val, exists := m[col]; exists {
-					row[i] = fmt.Sprintf("%v", val)
-				} else {
-					row[i] = ""
-				}
-			}
-			md += "| " + strings.Join(row, " | ") + " |\n"
-		}
-	}
-	return md + "\n"
 }

@@ -9,16 +9,14 @@ import (
 	"github.com/zer0ne-hub/z0ne/internal/recon"
 )
 
-// Task:Single pipeline step with dependent tasks and execution logic
+// Task represents a single pipeline step with dependencies and execution logic
 type Task struct {
 	Name         string
 	Dependencies []string
 	Execute      func(results map[string]interface{}) error
 }
 
-// RunPipeline: Executes tasks in parallel while respecting dependencies in queue order
-// Uses a goroutine pool to run tasks concurrently and a scheduler to ensure dependencies are met
-// before starting a task.
+// RunPipeline executes tasks in parallel while respecting dependencies.
 func RunPipeline(tasks []Task, maxWorkers int) {
 	results := make(map[string]interface{})
 	var mu sync.Mutex
@@ -28,11 +26,23 @@ func RunPipeline(tasks []Task, maxWorkers int) {
 	taskInProgress := make(map[string]bool)
 	taskQueue := make(chan Task)
 
-	// Workers
+	startWorkers(maxWorkers, taskQueue, &wg, &mu, taskCompleted, results)
+
+	scheduleTasks(tasks, taskQueue, &wg, &mu, taskCompleted, taskInProgress)
+
+	wg.Wait()
+	close(taskQueue)
+}
+
+// startWorkers launches goroutines to process tasks
+func startWorkers(maxWorkers int, taskQueue chan Task, wg *sync.WaitGroup, mu *sync.Mutex,
+	taskCompleted map[string]bool, results map[string]interface{}) {
+
 	for i := 0; i < maxWorkers; i++ {
 		go func() {
 			for task := range taskQueue {
 				err := task.Execute(results)
+
 				mu.Lock()
 				if err != nil {
 					color.Red("[!] %s failed: %v \n\n", task.Name, err)
@@ -41,34 +51,35 @@ func RunPipeline(tasks []Task, maxWorkers int) {
 					taskCompleted[task.Name] = true
 				}
 				mu.Unlock()
+
 				wg.Done()
 			}
 		}()
 	}
+}
 
-	// Scheduler
+// scheduleTasks manages dependencies and sends ready tasks to the queue
+func scheduleTasks(tasks []Task, taskQueue chan Task, wg *sync.WaitGroup, mu *sync.Mutex,
+	taskCompleted, taskInProgress map[string]bool) {
+
 	for {
 		startedAnyTask := false
+
 		for _, t := range tasks {
 			mu.Lock()
+
 			if taskCompleted[t.Name] || taskInProgress[t.Name] {
 				mu.Unlock()
 				continue
 			}
-			// Check if dependencies are all completed
-			depsReady := true
-			for _, dep := range t.Dependencies {
-				if !taskCompleted[dep] {
-					depsReady = false
-					break
-				}
-			}
-			if depsReady {
+
+			if dependenciesMet(t.Dependencies, taskCompleted) {
 				taskInProgress[t.Name] = true
 				wg.Add(1)
 				taskQueue <- t
 				startedAnyTask = true
 			}
+
 			mu.Unlock()
 		}
 
@@ -81,95 +92,98 @@ func RunPipeline(tasks []Task, maxWorkers int) {
 			mu.Unlock()
 		}
 	}
-	wg.Wait()
-	close(taskQueue)
 }
 
-// buildTasks: returns the ordered tasks for a given mode and target
+// dependenciesMet checks if all dependencies are completed
+func dependenciesMet(deps []string, completed map[string]bool) bool {
+	for _, dep := range deps {
+		if !completed[dep] {
+			return false
+		}
+	}
+	return true
+}
+
+// buildTasks returns the ordered tasks for a given mode and target
 func buildTasks(mode string, target string) []Task {
 	switch mode {
 	case "scan":
-		return []Task{
-			{Name: "naabu", Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunNaabu(target, "", "")
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("naabu", out)
-			}},
-			{Name: "subfinder", Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunSubfinder(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("subfinder", out)
-			}},
-			{Name: "dnsx", Dependencies: []string{"subfinder"}, Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunDnsX(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("dnsx", out)
-			}},
-			{Name: "httpx", Dependencies: []string{"dnsx", "naabu"}, Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunHttpX(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("httpx", out)
-			}},
-			{Name: "katana", Dependencies: []string{"httpx"}, Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunKatana(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("katana", out)
-			}},
-		}
-
+		return scanTasks(target)
 	case "probe":
-		return []Task{
-			{Name: "naabu", Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunNaabu(target, "", "")
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("naabu", out)
-			}},
-			{Name: "subfinder", Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunSubfinder(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("subfinder", out)
-			}},
-			{Name: "dnsx", Dependencies: []string{"subfinder"}, Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunDnsX(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("dnsx", out)
-			}},
-			{Name: "httpx", Dependencies: []string{"dnsx", "naabu"}, Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunHttpX(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("httpx", out)
-			}},
-			{Name: "nuclei", Dependencies: []string{"httpx"}, Execute: func(r map[string]interface{}) error {
-				out, err := recon.RunNuclei(target)
-				if err != nil {
-					return err
-				}
-				return SaveResultToJSON("nuclei", out)
-			}},
-		}
+		return probeTasks(target)
 	}
 	return nil
 }
 
-// RunRecon: Executes a broad scanning task sequence
+// scanTasks defines the scanning task sequence
+func scanTasks(target string) []Task {
+	return []Task{
+		{Name: "naabu", Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunNaabu(target, "", "")
+			return runAndSave("naabu", result, err)
+		}},
+		{Name: "subfinder", Execute: func(r map[string]interface{}) error {
+			if detectTargetType(target) != DOMAIN {
+				color.Yellow("[!] Skipping subfinder: target is not a domain\n")
+				return nil
+			}
+			result, err := recon.RunSubfinder(target)
+			return runAndSave("subfinder", result, err)
+		}},
+		{Name: "dnsx", Dependencies: []string{"subfinder"}, Execute: func(r map[string]interface{}) error {
+			if detectTargetType(target) != DOMAIN {
+				color.Yellow("[!] Skipping dnsx: target is not a domain\n")
+				return nil
+			}
+			result, err := recon.RunDnsX(target)
+			return runAndSave("dnsx", result, err)
+		}},
+		{Name: "httpx", Dependencies: []string{"dnsx", "naabu"}, Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunHttpX(target)
+			return runAndSave("httpx", result, err)
+		}},
+		{Name: "katana", Dependencies: []string{"httpx"}, Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunKatana(target)
+			return runAndSave("katana", result, err)
+		}},
+	}
+}
+
+// probeTasks defines the probing task sequence
+func probeTasks(target string) []Task {
+	return []Task{
+		{Name: "naabu", Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunNaabu(target, "", "")
+			return runAndSave("naabu", result, err)
+		}},
+		{Name: "subfinder", Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunSubfinder(target)
+			return runAndSave("subfinder", result, err)
+		}},
+		{Name: "dnsx", Dependencies: []string{"subfinder"}, Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunDnsX(target)
+			return runAndSave("dnsx", result, err)
+		}},
+		{Name: "httpx", Dependencies: []string{"dnsx", "naabu"}, Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunHttpX(target)
+			return runAndSave("httpx", result, err)
+		}},
+		{Name: "nuclei", Dependencies: []string{"httpx"}, Execute: func(r map[string]interface{}) error {
+			result, err := recon.RunNuclei(target)
+			return runAndSave("nuclei", result, err)
+		}},
+	}
+}
+
+// runAndSave wraps tool execution with result saving
+func runAndSave(toolName string, out interface{}, err error) error {
+	if err != nil {
+		return err
+	}
+	return SaveResultToJSON(toolName, out)
+}
+
+// RunRecon executes a broad scanning task sequence
 func RunRecon(target string) error {
 	if targetType := detectTargetType(target); targetType == IP || targetType == DOMAIN {
 		RunPipeline(buildTasks("scan", target), 3)
@@ -179,7 +193,7 @@ func RunRecon(target string) error {
 	return nil
 }
 
-// RunProbe: Executes a precise probing task sequence
+// RunProbe executes a precise probing task sequence
 func RunProbe(target string, keys ProbeKeys) error {
 	if targetType := detectTargetType(target); targetType == IP || targetType == DOMAIN {
 		tasks := buildTasks("probe", target)
@@ -189,11 +203,8 @@ func RunProbe(target string, keys ProbeKeys) error {
 				Name:         "uncover",
 				Dependencies: []string{"httpx"},
 				Execute: func(r map[string]interface{}) error {
-					out, err := recon.RunUncover(target, keys.ShodanKey)
-					if err != nil {
-						return err
-					}
-					return SaveResultToJSON("uncover", out)
+					result, err := recon.RunUncover(target, keys.ShodanKey)
+					return runAndSave("uncover", result, err)
 				},
 			})
 		}

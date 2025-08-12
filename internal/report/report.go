@@ -7,14 +7,11 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/zer0ne-hub/z0ne/internal/core"
 )
 
 // ReconReport: Struct to hold report data
 type ReconReport struct {
 	Target     string
-	ModulesRun []string
 	Results    map[string]interface{}
 	RedactedAt time.Time
 }
@@ -44,32 +41,16 @@ func GenerateReport(targetName string) error {
 	// build the report
 	report := ReconReport{
 		Target:     targetName,
-		ModulesRun: []string{},
 		Results:    results,
 		RedactedAt: time.Now(),
 	}
 
 	// make markdown content
-	md := fmt.Sprintf("# Reconnaissance Report for %s\n\n", report.Target)
-	md += fmt.Sprintf("**Redacted at:** %s\n\n", report.RedactedAt.Format(time.RFC1123))
-
-	md += "## Modules Run\n"
-	if len(report.ModulesRun) == 0 {
-		md += "_No module info available_\n"
-	} else {
-		for _, m := range report.ModulesRun {
-			md += fmt.Sprintf("- %s\n", m)
-		}
-	}
-	md += "\n"
-
-	md += "## Results\n"
-
-	for module, data := range report.Results {
-		md += fmt.Sprintf("### %s\n\n", module)
-		md += core.FormatMap(data, 0)
-		md += "\n"
-	}
+	md := fmt.Sprintf("# %s\n\n", report.Target)
+	md += fmt.Sprintf("**Report geberated at: ** %s\n\n", report.RedactedAt.Format(time.RFC1123))
+	md += "## Assets Discovered\n\n"
+	md += "### Domains and IPs\n\n"
+	md += ""
 
 	// write report.md
 	err = os.WriteFile(reportFile, []byte(md), 0644)

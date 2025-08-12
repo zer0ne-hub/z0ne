@@ -30,22 +30,16 @@ func RunDnsX(target string) (interface{}, error) {
 		return nil, fmt.Errorf("no results for %s", target)
 	}
 
-	trace, err := dnsClient.Trace(target)
-	if err != nil {
-		return nil, fmt.Errorf("trace error: %w", err)
-	}
-
 	isCDN, cdn, cdntype, err := cdnClient.CheckDomainWithFallback(target)
 	if err != nil {
 		return nil, fmt.Errorf("cdn check error: %w", err)
 	}
 
 	results := map[string]interface{}{
-		"ips":      ips,
-		"DNStrace": trace,
-		"isCDN":    isCDN,
-		"CDNType":  cdntype,
-		"CDN":      cdn,
+		"ips":     ips,
+		"isCDN":   isCDN,
+		"CDNType": cdntype,
+		"CDN":     cdn,
 	}
 
 	fmt.Println("DNSx found ips: ")
